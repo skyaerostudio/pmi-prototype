@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donor-Pasien Matching - PMI DonorHub</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .matching-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.15s;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .profile-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            transition: all 0.25s;
+            position: relative;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .profile-header {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .profile-meta {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .stat-box {
+            background: var(--gray-50);
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+        }
+
+        .match-score {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, var(--success), var(--primary));
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .match-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 1.5rem;
+        }
+
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
+
+        .match-profiles {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 2rem;
+            align-items: center;
+            margin: 1.5rem 0;
+        }
+
+        .match-connection {
+            text-align: center;
+        }
+
+        .match-arrow {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .timeline {
+            border-left: 2px solid var(--gray-200);
+            padding-left: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .timeline-item {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -1.69rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success);
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--success);
+        }
+
+        .timeline-date {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-content {
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <div class="nav-logo-icon">🩸</div>
+                <span>PMI DonorHub</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Beranda</a></li>
+                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+                <li><a href="calendar.html" class="nav-link">Kalender</a></li>
+                <li><a href="matching.html" class="nav-link active">Matching</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Donor-Pasien Matching</h1>
+            <p class="page-subtitle">Menghubungkan donor tetap dengan pasien yang membutuhkan transfusi rutin</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="matching-tabs">
+            <button class="tab-btn active" data-tab="patients">Pasien Mencari Donor</button>
+            <button class="tab-btn" data-tab="donors">Donor Tersedia</button>
+            <button class="tab-btn" data-tab="matches">Match Aktif</button>
+        </div>
+
+        <!-- Patients Tab -->
+        <div id="patients" class="tab-content active">
+            <div class="card mb-4">
+                <div class="flex items-center justify-between">
+                    <p style="margin: 0; color: var(--gray-600);">
+                        <strong id="patientCount">0</strong> pasien membutuhkan donor tetap
+                    </p>
+                    <select id="patientStatusFilter" class="form-select" style="width: 200px;">
+                        <option value="">Semua Status</option>
+                        <option value="searching">Mencari Donor</option>
+                        <option value="matched">Sudah Terhubung</option>
+                    </select>
+                </div>
+            </div>
+            <div class="profile-grid" id="patientGrid">
+                <!-- Patient cards will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Donors Tab -->
+        <div id="donors" class="tab-content">
+            <div class="card mb-4">
+                <div class="flex items-center justify-between">
+                    <p style="margin: 0; color: var(--gray-600);">
+                        <strong id="donorCount">0</strong> donor siap membantu
+                    </p>
+                    <select id="donorAvailabilityFilter" class="form-select" style="width: 200px;">
+                        <option value="">Semua Status</option>
+                        <option value="Tersedia">Tersedia</option>
+                        <option value="Terjadwal">Sudah Terjadwal</option>
+                    </select>
+                </div>
+            </div>
+            <div class="profile-grid" id="donorGrid">
+                <!-- Donor cards will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Active Matches Tab -->
+        <div id="matches" class="tab-content">
+            <div class="card mb-4">
+                <p style="margin: 0; color: var(--gray-600);">
+                    <strong id="matchCount">0</strong> pasangan donor-pasien aktif
+                </p>
+            </div>
+            <div id="matchList">
+                <!-- Match cards will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Match Detail Modal -->
+    <div id="matchModal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="matchModalTitle">Saran Matching</h3>
+                <button class="modal-close" onclick="closeMatchModal()">×</button>
+            </div>
+            <div class="modal-body" id="matchModalBody">
+                <!-- Match details will be inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeMatchModal()">Tutup</button>
+                <button class="btn btn-primary" onclick="confirmMatch()">Hubungkan</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/mock-data.js"></script>
+    <script src="js/matching.js"></script>
+</body>
+
+</html>

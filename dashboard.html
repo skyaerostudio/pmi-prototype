@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Stok Darah - PMI DonorHub</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            border-left: 4px solid;
+        }
+
+        .summary-card.sufficient {
+            border-left-color: var(--success);
+        }
+
+        .summary-card.low {
+            border-left-color: var(--warning);
+        }
+
+        .summary-card.critical {
+            border-left-color: var(--danger);
+        }
+
+        .summary-number {
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .summary-label {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        .blood-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .blood-type-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            transition: all 0.25s;
+        }
+
+        .blood-type-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .blood-type-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .blood-type-units {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .last-update {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        .stock-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .stock-table th {
+            background: var(--gray-50);
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .stock-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .stock-table tr:hover {
+            background: var(--gray-50);
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <div class="nav-logo-icon">🩸</div>
+                <span>PMI DonorHub</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Beranda</a></li>
+                <li><a href="dashboard.html" class="nav-link active">Dashboard</a></li>
+                <li><a href="calendar.html" class="nav-link">Kalender</a></li>
+                <li><a href="matching.html" class="nav-link">Matching</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard-header">
+            <div>
+                <h1 class="page-title" style="margin-bottom: 0.5rem;">Dashboard Stok Darah Real-Time</h1>
+                <p class="page-subtitle" style="margin: 0;">Pembaruan terakhir: <span id="lastUpdateTime">17 Jan 2026,
+                        14:10 WIB</span></p>
+            </div>
+            <div class="filters">
+                <select id="provinceFilter" class="form-select" style="width: 200px;">
+                    <option value="">Semua Provinsi</option>
+                </select>
+                <select id="cityFilter" class="form-select" style="width: 200px;">
+                    <option value="">Semua Kota</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-grid">
+            <div class="summary-card sufficient">
+                <span class="summary-number" id="totalUnits">0</span>
+                <span class="summary-label">Total Unit Darah</span>
+            </div>
+            <div class="summary-card sufficient">
+                <span class="summary-number" id="sufficientCount">0</span>
+                <span class="summary-label">Stok Cukup</span>
+            </div>
+            <div class="summary-card low">
+                <span class="summary-number" id="lowCount">0</span>
+                <span class="summary-label">Stok Rendah</span>
+            </div>
+            <div class="summary-card critical">
+                <span class="summary-number" id="criticalCount">0</span>
+                <span class="summary-label">Stok Kritis</span>
+            </div>
+        </div>
+
+        <!-- Blood Type Cards -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Stok per Golongan Darah</h3>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <div style="width: 12px; height: 12px; background: var(--success); border-radius: 50%;"></div>
+                        <span style="font-size: 0.875rem;">Cukup</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div style="width: 12px; height: 12px; background: var(--warning); border-radius: 50%;"></div>
+                        <span style="font-size: 0.875rem;">Rendah</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div style="width: 12px; height: 12px; background: var(--danger); border-radius: 50%;"></div>
+                        <span style="font-size: 0.875rem;">Kritis</span>
+                    </div>
+                </div>
+            </div>
+            <div class="blood-type-grid" id="bloodTypeGrid">
+                <!-- Blood type cards will be inserted here by JS -->
+            </div>
+        </div>
+
+        <!-- Detailed Stock Table -->
+        <div class="card mt-8">
+            <div class="card-header">
+                <h3 class="card-title">Detail Stok per Lokasi</h3>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="stock-table">
+                    <thead>
+                        <tr>
+                            <th>Kota</th>
+                            <th>Provinsi</th>
+                            <th>Golongan Darah</th>
+                            <th>Unit Tersedia</th>
+                            <th>Status</th>
+                            <th>Update Terakhir</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stockTableBody">
+                        <!-- Table rows will be inserted here by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/mock-data.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+
+</html>

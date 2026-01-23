@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalender Donor Darah - PMI DonorHub</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .calendar-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .calendar-container {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 1px;
+            background: var(--gray-200);
+            border: 1px solid var(--gray-200);
+        }
+
+        .calendar-day-header {
+            background: var(--gray-50);
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            min-width: 0;
+        }
+
+        .calendar-day {
+            background: white;
+            min-height: 120px;
+            min-width: 0;
+            padding: 0.5rem;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.15s;
+            overflow: hidden;
+        }
+
+        .calendar-day:hover {
+            background: var(--gray-50);
+        }
+
+        .calendar-day.other-month {
+            opacity: 0.3;
+        }
+
+        .calendar-date {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .calendar-event {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 0.25rem;
+            cursor: pointer;
+            color: white;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 100%;
+            display: block;
+        }
+
+        .event-fixed {
+            background: var(--secondary);
+        }
+
+        .event-mobile {
+            background: var(--success);
+        }
+
+        .event-emergency {
+            background: var(--danger);
+            animation: blink 1.5s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .event-list {
+            display: grid;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .event-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            border-left: 4px solid;
+            transition: all 0.25s;
+        }
+
+        .event-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .event-card.fixed {
+            border-left-color: var(--secondary);
+        }
+
+        .event-card.mobile {
+            border-left-color: var(--success);
+        }
+
+        .event-card.emergency {
+            border-left-color: var(--danger);
+        }
+
+        .event-meta {
+            display: flex;
+            gap: 2rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        .event-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .event-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <div class="nav-logo-icon">🩸</div>
+                <span>PMI DonorHub</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Beranda</a></li>
+                <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+                <li><a href="calendar.html" class="nav-link active">Kalender</a></li>
+                <li><a href="matching.html" class="nav-link">Matching</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="calendar-header">
+            <div>
+                <h1 class="page-title" style="margin-bottom: 0;">Kalender Donor Darah</h1>
+                <p class="page-subtitle" style="margin: 0;">Temukan dan daftar event donor darah di sekitarmu</p>
+            </div>
+            <div class="calendar-controls">
+                <button id="prevMonth" class="btn btn-outline">← Prev</button>
+                <span id="currentMonth" style="font-weight: 600; min-width: 150px; text-align: center;">Januari
+                    2026</span>
+                <button id="nextMonth" class="btn btn-outline">Next →</button>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="card mb-4">
+            <div class="flex items-center gap-4" style="flex-wrap: wrap;">
+                <div class="form-group" style="margin: 0; flex: 1; min-width: 200px;">
+                    <select id="locationFilter" class="form-select">
+                        <option value="">Semua Lokasi</option>
+                        <option value="Jakarta">Jakarta</option>
+                        <option value="Surabaya">Surabaya</option>
+                        <option value="Bandung">Bandung</option>
+                        <option value="Medan">Medan</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin: 0; flex: 1; min-width: 200px;">
+                    <select id="typeFilter" class="form-select">
+                        <option value="">Semua Tipe</option>
+                        <option value="fixed">Lokasi Tetap</option>
+                        <option value="mobile">Mobile Drive</option>
+                        <option value="emergency">Kampanye Darurat</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div style="width: 12px; height: 12px; background: var(--secondary); border-radius: 50%;"></div>
+                    <span style="font-size: 0.875rem;">Tetap</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div style="width: 12px; height: 12px; background: var(--success); border-radius: 50%;"></div>
+                    <span style="font-size: 0.875rem;">Mobile</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div style="width: 12px; height: 12px; background: var(--danger); border-radius: 50%;"></div>
+                    <span style="font-size: 0.875rem;">Darurat</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar View -->
+        <div class="calendar-container">
+            <div class="calendar-grid" id="calendarGrid">
+                <div class="calendar-day-header">Minggu</div>
+                <div class="calendar-day-header">Senin</div>
+                <div class="calendar-day-header">Selasa</div>
+                <div class="calendar-day-header">Rabu</div>
+                <div class="calendar-day-header">Kamis</div>
+                <div class="calendar-day-header">Jumat</div>
+                <div class="calendar-day-header">Sabtu</div>
+                <!-- Calendar days will be inserted here by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Upcoming Events List -->
+        <div class="card mt-8">
+            <div class="card-header">
+                <h3 class="card-title">Event Mendatang</h3>
+            </div>
+            <div class="event-list" id="eventList">
+                <!-- Event cards will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Detail Modal -->
+    <div id="eventModal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Event Detail</h3>
+                <button class="modal-close" onclick="closeEventModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Event details will be inserted here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeEventModal()">Tutup</button>
+                <button class="btn btn-primary" onclick="handleRSVP()">Daftar Sekarang</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/mock-data.js"></script>
+    <script src="js/calendar.js"></script>
+</body>
+
+</html>

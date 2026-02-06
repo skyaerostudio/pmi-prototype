@@ -1003,222 +1003,126 @@ const calendarEvents = [
   }
 ];
 
-// Mock Patient Data
-const patientData = [
+// Committed Donors Data (Publicly visible with consent)
+const committedDonors = [
   {
     id: 1,
-    name: 'Ahmad Rizki',
-    age: 12,
-    bloodType: 'B+',
-    diagnosis: 'Thalassemia Major',
-    frequency: 'Setiap 2 minggu',
-    hospital: 'RS Cipto Mangunkusumo, Jakarta',
-    location: 'Jakarta',
-    matchStatus: 'matched',
-    donorId: 2,
-    nextTransfusion: '2026-01-25',
-    profilePicture: null
-  },
-  {
-    id: 2,
-    name: 'Siti Aminah',
-    age: 8,
-    bloodType: 'O-',
-    diagnosis: 'Thalassemia Major',
-    frequency: 'Setiap 3 minggu',
-    hospital: 'RS Soetomo, Surabaya',
-    location: 'Surabaya',
-    matchStatus: 'matched',
-    donorId: 5,
-    nextTransfusion: '2026-01-30',
-    profilePicture: null
-  },
-  {
-    id: 3,
-    name: 'Budi Santoso',
-    age: 15,
+    initials: 'AW',
     bloodType: 'A+',
-    diagnosis: 'Aplastic Anemia',
-    frequency: 'Setiap bulan',
-    hospital: 'RS Hasan Sadikin, Bandung',
-    location: 'Bandung',
-    matchStatus: 'searching',
-    donorId: null,
-    nextTransfusion: '2026-02-05',
-    profilePicture: null
-  },
-  {
-    id: 4,
-    name: 'Dewi Lestari',
-    age: 10,
-    bloodType: 'AB+',
-    diagnosis: 'Thalassemia Intermedia',
-    frequency: 'Setiap bulan',
-    hospital: 'RS Sardjito, Yogyakarta',
-    location: 'Yogyakarta',
-    matchStatus: 'matched',
-    donorId: 8,
-    nextTransfusion: '2026-02-01',
-    profilePicture: null
-  },
-  {
-    id: 5,
-    name: 'Rudi Hermawan',
-    age: 14,
-    bloodType: 'B-',
-    diagnosis: 'Thalassemia Major',
-    frequency: 'Setiap 2 minggu',
-    hospital: 'RS Adam Malik, Medan',
-    location: 'Medan',
-    matchStatus: 'searching',
-    donorId: null,
-    nextTransfusion: '2026-01-28',
-    profilePicture: null
-  }
-];
-
-// Mock Donor Data
-const donorData = [
-  {
-    id: 1,
-    name: 'Andi Wijaya',
-    age: 32,
-    bloodType: 'A+',
-    totalDonations: 24,
-    lastDonation: '2025-12-15',
-    frequency: 'Setiap 3 bulan',
-    location: 'Jakarta Selatan',
-    availability: 'Tersedia',
-    matchedPatientId: null,
-    joinDate: '2020-03-10'
-  },
-  {
-    id: 2,
-    name: 'Rina Susanti',
-    age: 28,
-    bloodType: 'B+',
-    totalDonations: 18,
-    lastDonation: '2026-01-05',
-    frequency: 'Setiap 3 bulan',
     location: 'Jakarta Pusat',
-    availability: 'Terjadwal',
-    matchedPatientId: 1,
-    joinDate: '2021-06-20'
+    commitmentDate: '2025-06-15',
+    frequency: 'Setiap 3 bulan',
+    patientsHelped: 5,
+    totalDonations: 12,
+    badge: 'Life Saver'
+  },
+  {
+    id: 2,
+    initials: 'BS',
+    bloodType: 'O-',
+    location: 'Surabaya',
+    commitmentDate: '2025-08-20',
+    frequency: 'Setiap 2 bulan',
+    patientsHelped: 8,
+    totalDonations: 24,
+    badge: 'Life Saver'
   },
   {
     id: 3,
-    name: 'Bambang Hartono',
-    age: 45,
-    bloodType: 'O+',
-    totalDonations: 42,
-    lastDonation: '2025-11-22',
-    frequency: 'Setiap 2 bulan',
-    location: 'Tangerang',
-    availability: 'Tersedia',
-    matchedPatientId: null,
-    joinDate: '2015-01-15'
+    initials: 'CR',
+    bloodType: 'B+',
+    location: 'Bandung',
+    commitmentDate: '2025-11-10',
+    frequency: 'Setiap 3 bulan',
+    patientsHelped: 3,
+    totalDonations: 6,
+    badge: 'Committed'
   },
   {
     id: 4,
-    name: 'Linda Kusuma',
-    age: 35,
-    bloodType: 'AB+',
-    totalDonations: 15,
-    lastDonation: '2025-12-28',
-    frequency: 'Setiap 4 bulan',
-    location: 'Jakarta Barat',
-    availability: 'Tersedia',
-    matchedPatientId: null,
-    joinDate: '2022-08-05'
+    initials: 'DK',
+    bloodType: 'AB-',
+    location: 'Yogyakarta',
+    commitmentDate: '2026-01-05',
+    frequency: 'Setiap 2 bulan',
+    patientsHelped: 2,
+    totalDonations: 4,
+    badge: 'Committed'
   },
   {
     id: 5,
-    name: 'Hendra Gunawan',
-    age: 38,
-    bloodType: 'O-',
-    totalDonations: 31,
-    lastDonation: '2026-01-08',
-    frequency: 'Setiap 3 bulan',
-    location: 'Surabaya',
-    availability: 'Terjadwal',
-    matchedPatientId: 2,
-    joinDate: '2018-04-12'
+    initials: 'EL',
+    bloodType: 'A-',
+    location: 'Semarang',
+    commitmentDate: '2025-09-12',
+    frequency: 'Setiap 4 bulan',
+    patientsHelped: 4,
+    totalDonations: 9,
+    badge: 'Committed'
   },
   {
     id: 6,
-    name: 'Sri Wahyuni',
-    age: 29,
-    bloodType: 'A-',
-    totalDonations: 12,
-    lastDonation: '2025-12-01',
+    initials: 'FM',
+    bloodType: 'O+',
+    location: 'Medan',
+    commitmentDate: '2025-07-22',
     frequency: 'Setiap 3 bulan',
-    location: 'Bandung',
-    availability: 'Tersedia',
-    matchedPatientId: null,
-    joinDate: '2022-11-20'
+    patientsHelped: 6,
+    totalDonations: 15,
+    badge: 'Life Saver'
   },
   {
     id: 7,
-    name: 'Agus Setiawan',
-    age: 41,
+    initials: 'GN',
     bloodType: 'B-',
-    totalDonations: 27,
-    lastDonation: '2025-11-18',
-    frequency: 'Setiap 3 bulan',
-    location: 'Semarang',
-    availability: 'Tersedia',
-    matchedPatientId: null,
-    joinDate: '2017-09-08'
+    location: 'Denpasar',
+    commitmentDate: '2026-02-01',
+    frequency: 'Setiap 2 bulan',
+    patientsHelped: 1,
+    totalDonations: 2,
+    badge: 'New'
   },
   {
     id: 8,
-    name: 'Mega Pratiwi',
-    age: 33,
+    initials: 'HS',
     bloodType: 'AB+',
-    totalDonations: 20,
-    lastDonation: '2026-01-02',
+    location: 'Makassar',
+    commitmentDate: '2025-12-18',
     frequency: 'Setiap 3 bulan',
-    location: 'Yogyakarta',
-    availability: 'Terjadwal',
-    matchedPatientId: 4,
-    joinDate: '2020-07-25'
+    patientsHelped: 2,
+    totalDonations: 5,
+    badge: 'Committed'
   }
 ];
 
-// Mock Match Data
-const matchData = [
+// Impact Statistics (Aggregate & Anonymous)
+const impactStats = {
+  totalCommittedDonors: 145,
+  totalPatientsHelped: 328,
+  totalDonations: 1560,
+  activeMatches: 89,
+  citiesCovered: 12
+};
+
+// Success Stories (Anonymized)
+const successStories = [
   {
     id: 1,
-    patientId: 1,
-    donorId: 2,
-    compatibilityScore: 95,
-    matchedDate: '2025-06-15',
-    status: 'active',
-    totalDonations: 12,
-    nextScheduledDonation: '2026-01-25',
-    lastCommunication: '2026-01-10'
+    icon: '👶',
+    story: 'Seorang anak dengan Thalassemia di Jakarta kini mendapatkan jaminan darah rutin berkat 5 donor tetap yang bergantian.',
+    date: 'Januari 2026'
   },
   {
     id: 2,
-    patientId: 2,
-    donorId: 5,
-    compatibilityScore: 92,
-    matchedDate: '2025-08-20',
-    status: 'active',
-    totalDonations: 8,
-    nextScheduledDonation: '2026-01-30',
-    lastCommunication: '2026-01-12'
+    icon: '👵',
+    story: 'Pasien kanker darah di Surabaya berhasil melewati masa kritis berkat donor trombosit apheresis dari komunitas donor tetap.',
+    date: 'Desember 2025'
   },
   {
     id: 3,
-    patientId: 4,
-    donorId: 8,
-    compatibilityScore: 88,
-    matchedDate: '2025-10-05',
-    status: 'active',
-    totalDonations: 4,
-    nextScheduledDonation: '2026-02-01',
-    lastCommunication: '2026-01-15'
+    icon: '🏥',
+    story: 'RSUD di daerah terpencil kini memiliki stok darah langka (Rhesus Negatif) yang stabil berkat program pemerataan donor.',
+    date: 'Februari 2026'
   }
 ];
 
@@ -1238,18 +1142,6 @@ function getEventsByDateRange(startDate, endDate) {
   });
 }
 
-function getPatientsByStatus(status) {
-  return patientData.filter(patient => patient.matchStatus === status);
-}
-
-function getDonorsByAvailability(availability) {
-  return donorData.filter(donor => donor.availability === availability);
-}
-
-function getMatchesByStatus(status) {
-  return matchData.filter(match => match.status === status);
-}
-
 // Export all data
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
@@ -1257,14 +1149,11 @@ if (typeof module !== 'undefined' && module.exports) {
     PROVINCES,
     bloodStockData,
     calendarEvents,
-    patientData,
-    donorData,
-    matchData,
+    committedDonors,
+    impactStats,
+    successStories,
     getBloodStockByCity,
     getBloodStockByProvince,
-    getEventsByDateRange,
-    getPatientsByStatus,
-    getDonorsByAvailability,
-    getMatchesByStatus
+    getEventsByDateRange
   };
 }

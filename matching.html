@@ -4,51 +4,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Donor-Pasien Matching - PMI DonorHub</title>
+    <title>Program Donor Tetap - PMI DonorHub</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <style>
-        .matching-tabs {
-            display: flex;
-            gap: 1rem;
+        .commitment-hero {
+            background: linear-gradient(135deg, #DC2626 0%, #B91C1C 50%, #2563EB 100%);
+            color: white;
+            padding: 3rem 0;
+            margin: -2rem -1.5rem 3rem;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 1.125rem;
+            opacity: 0.95;
             margin-bottom: 2rem;
-            border-bottom: 2px solid var(--gray-200);
         }
 
-        .tab-btn {
-            background: none;
-            border: none;
-            padding: 1rem 1.5rem;
-            font-weight: 600;
-            color: var(--gray-600);
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -2px;
-            transition: all 0.15s;
-        }
-
-        .tab-btn.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .profile-grid {
+        .impact-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .impact-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            transition: all 0.25s;
+        }
+
+        .impact-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .impact-number {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .impact-label {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            font-weight: 600;
+        }
+
+        .registration-form {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            max-width: 600px;
+            margin: 0 auto 3rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .donor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1.5rem;
         }
 
-        .profile-card {
+        .donor-card {
             background: white;
             padding: 1.5rem;
             border-radius: var(--radius-lg);
@@ -57,53 +103,54 @@
             position: relative;
         }
 
-        .profile-card:hover {
+        .donor-card:hover {
             transform: translateY(-4px);
             box-shadow: var(--shadow-lg);
         }
 
-        .profile-header {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .profile-avatar {
+        .donor-avatar {
             width: 60px;
             height: 60px;
             border-radius: var(--radius-md);
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--success), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-size: 1.5rem;
             font-weight: 700;
+            margin: 0 auto 1rem;
         }
 
-        .profile-info {
-            flex: 1;
-        }
-
-        .profile-name {
-            font-size: 1.125rem;
+        .donor-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
             font-weight: 600;
-            margin-bottom: 0.25rem;
+            text-transform: uppercase;
         }
 
-        .profile-meta {
-            font-size: 0.875rem;
-            color: var(--gray-600);
+        .badge-lifesaver {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: white;
         }
 
-        .profile-stats {
+        .badge-committed {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+        }
+
+        .donor-stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin: 1rem 0;
+            gap: 0.75rem;
+            margin-top: 1rem;
         }
 
-        .stat-box {
+        .stat-item {
             background: var(--gray-50);
             padding: 0.75rem;
             border-radius: var(--radius-md);
@@ -121,82 +168,38 @@
             color: var(--gray-600);
         }
 
-        .match-score {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: linear-gradient(135deg, var(--success), var(--primary));
-            color: white;
-            padding: 0.5rem 0.75rem;
-            border-radius: var(--radius-full);
-            font-weight: 700;
-            font-size: 0.875rem;
+        .success-story {
+            background: var(--gray-50);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border-left: 4px solid var(--success);
+            margin-bottom: 1rem;
         }
 
-        .match-card {
-            background: white;
-            padding: 2rem;
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-md);
-            margin-bottom: 1.5rem;
-        }
-
-        .match-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 2px solid var(--gray-100);
-        }
-
-        .match-profiles {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 2rem;
-            align-items: center;
-            margin: 1.5rem 0;
-        }
-
-        .match-connection {
-            text-align: center;
-        }
-
-        .match-arrow {
+        .story-icon {
             font-size: 2rem;
-            color: var(--primary);
+            margin-bottom: 0.5rem;
         }
 
-        .timeline {
-            border-left: 2px solid var(--gray-200);
-            padding-left: 1.5rem;
-            margin-top: 1.5rem;
+        .story-text {
+            color: var(--gray-700);
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
         }
 
-        .timeline-item {
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-
-        .timeline-dot {
-            position: absolute;
-            left: -1.69rem;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--success);
-            border: 2px solid white;
-            box-shadow: 0 0 0 2px var(--success);
-        }
-
-        .timeline-date {
+        .story-date {
             font-size: 0.75rem;
             color: var(--gray-500);
-            margin-bottom: 0.25rem;
         }
 
-        .timeline-content {
-            font-weight: 500;
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -212,89 +215,129 @@
                 <li><a href="index.html" class="nav-link">Beranda</a></li>
                 <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
                 <li><a href="calendar.html" class="nav-link">Kalender</a></li>
-                <li><a href="matching.html" class="nav-link active">Matching</a></li>
+                <li><a href="matching.html" class="nav-link active">Donor Tetap</a></li>
             </ul>
         </div>
     </nav>
 
-    <div class="container">
-        <div class="page-header">
-            <h1 class="page-title">Donor-Pasien Matching</h1>
-            <p class="page-subtitle">Menghubungkan donor tetap dengan pasien yang membutuhkan transfusi rutin</p>
-        </div>
-
-        <!-- Tabs -->
-        <div class="matching-tabs">
-            <button class="tab-btn active" data-tab="patients">Pasien Mencari Donor</button>
-            <button class="tab-btn" data-tab="donors">Donor Tersedia</button>
-            <button class="tab-btn" data-tab="matches">Match Aktif</button>
-        </div>
-
-        <!-- Patients Tab -->
-        <div id="patients" class="tab-content active">
-            <div class="card mb-4">
-                <div class="flex items-center justify-between">
-                    <p style="margin: 0; color: var(--gray-600);">
-                        <strong id="patientCount">0</strong> pasien membutuhkan donor tetap
-                    </p>
-                    <select id="patientStatusFilter" class="form-select" style="width: 200px;">
-                        <option value="">Semua Status</option>
-                        <option value="searching">Mencari Donor</option>
-                        <option value="matched">Sudah Terhubung</option>
-                    </select>
-                </div>
-            </div>
-            <div class="profile-grid" id="patientGrid">
-                <!-- Patient cards will be inserted here -->
-            </div>
-        </div>
-
-        <!-- Donors Tab -->
-        <div id="donors" class="tab-content">
-            <div class="card mb-4">
-                <div class="flex items-center justify-between">
-                    <p style="margin: 0; color: var(--gray-600);">
-                        <strong id="donorCount">0</strong> donor siap membantu
-                    </p>
-                    <select id="donorAvailabilityFilter" class="form-select" style="width: 200px;">
-                        <option value="">Semua Status</option>
-                        <option value="Tersedia">Tersedia</option>
-                        <option value="Terjadwal">Sudah Terjadwal</option>
-                    </select>
-                </div>
-            </div>
-            <div class="profile-grid" id="donorGrid">
-                <!-- Donor cards will be inserted here -->
-            </div>
-        </div>
-
-        <!-- Active Matches Tab -->
-        <div id="matches" class="tab-content">
-            <div class="card mb-4">
-                <p style="margin: 0; color: var(--gray-600);">
-                    <strong id="matchCount">0</strong> pasangan donor-pasien aktif
-                </p>
-            </div>
-            <div id="matchList">
-                <!-- Match cards will be inserted here -->
-            </div>
+    <!-- Hero Section -->
+    <div class="commitment-hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Program Donor Tetap</h1>
+            <p class="hero-subtitle">
+                Daftar sebagai donor tetap dan bantu pasien yang membutuhkan transfusi rutin. Komitmen Anda dapat
+                menyelamatkan nyawa!
+            </p>
+            <button class="btn btn-primary btn-lg" onclick="scrollToRegistration()">
+                Daftar Sekarang
+            </button>
         </div>
     </div>
 
-    <!-- Match Detail Modal -->
-    <div id="matchModal" class="modal-overlay hidden">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title" id="matchModalTitle">Saran Matching</h3>
-                <button class="modal-close" onclick="closeMatchModal()">×</button>
+    <div class="container">
+        <!-- Impact Dashboard -->
+        <div class="page-header">
+            <h2 class="page-title">Dampak Program</h2>
+            <p class="page-subtitle">Bersama kita menyelamatkan nyawa</p>
+        </div>
+
+        <div class="impact-grid" id="impactGrid">
+            <!-- Impact cards will be inserted here -->
+        </div>
+
+        <!-- Success Stories -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3 class="card-title">Kisah Sukses</h3>
             </div>
-            <div class="modal-body" id="matchModalBody">
-                <!-- Match details will be inserted here -->
+            <div class="card-body" id="successStories">
+                <!-- Success stories will be inserted here -->
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline" onclick="closeMatchModal()">Tutup</button>
-                <button class="btn btn-primary" onclick="confirmMatch()">Hubungkan</button>
-            </div>
+        </div>
+
+        <!-- Registration Form -->
+        <div id="registrationSection" class="page-header" style="margin-top: 3rem;">
+            <h2 class="page-title">Daftar Donor Tetap</h2>
+            <p class="page-subtitle">Jadilah pahlawan bagi mereka yang membutuhkan</p>
+        </div>
+
+        <div class="registration-form">
+            <form id="donorRegistrationForm">
+                <div class="form-group">
+                    <label class="form-label">Nama Lengkap *</label>
+                    <input type="text" id="donorName" class="form-input" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Golongan Darah *</label>
+                        <select id="donorBloodType" class="form-select" required>
+                            <option value="">Pilih golongan darah</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Usia *</label>
+                        <input type="number" id="donorAge" class="form-input" min="17" max="65" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Lokasi *</label>
+                    <input type="text" id="donorLocation" class="form-input" placeholder="Kota, Provinsi" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Frekuensi Donor *</label>
+                    <select id="donorFrequency" class="form-select" required>
+                        <option value="">Pilih frekuensi</option>
+                        <option value="Setiap 2 bulan">Setiap 2 bulan</option>
+                        <option value="Setiap 3 bulan">Setiap 3 bulan</option>
+                        <option value="Setiap 4 bulan">Setiap 4 bulan</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email *</label>
+                    <input type="email" id="donorEmail" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Nomor Telepon *</label>
+                    <input type="tel" id="donorPhone" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" id="donorConsent" required>
+                        <span style="font-size: 0.875rem;">
+                            Saya bersedia ditampilkan di daftar donor terdaftar (opsional)
+                        </span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    Daftar Sebagai Donor Tetap
+                </button>
+            </form>
+        </div>
+
+        <!-- Committed Donors Showcase -->
+        <div class="page-header" style="margin-top: 3rem;">
+            <h2 class="page-title">Donor Terdaftar</h2>
+            <p class="page-subtitle">Para pahlawan yang telah berkomitmen</p>
+        </div>
+
+        <div class="donor-grid" id="committedDonorsGrid">
+            <!-- Committed donor cards will be inserted here -->
         </div>
     </div>
 

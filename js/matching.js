@@ -1,414 +1,124 @@
-// Matching Logic for PMI Donor-Patient Matching System
+// Matching Logic for PMI Donor Commitment Program
 
-let selectedPatient = null;
-let selectedDonor = null;
-
-// Initialize matching page
+// Initialize page
 document.addEventListener('DOMContentLoaded', function () {
-  setupTabs();
-  renderPatients();
-  renderDonors();
-  renderMatches();
-  setupFilters();
+  renderImpactStats();
+  renderSuccessStories();
+  renderCommittedDonors();
+  setupRegistrationForm();
 });
 
-// Setup tab navigation
-function setupTabs() {
-  const tabBtns = document.querySelectorAll('.tab-btn');
-  tabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      // Remove active from all tabs
-      tabBtns.forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+// Render impact statistics
+function renderImpactStats() {
+  const grid = document.getElementById('impactGrid');
+  const stats = [
+    { label: 'Pasien Terbantu', value: impactStats.totalPatientsHelped, icon: '❤️' },
+    { label: 'Donor Berkomitmen', value: impactStats.totalCommittedDonors, icon: '🤝' },
+    { label: 'Total Donasi', value: impactStats.totalDonations, icon: '🩸' },
+    { label: 'Kota Terjangkau', value: impactStats.citiesCovered, icon: '🏙️' }
+  ];
 
-      // Add active to clicked tab
-      btn.classList.add('active');
-      const tabId = btn.getAttribute('data-tab');
-      document.getElementById(tabId).classList.add('active');
-    });
+  grid.innerHTML = stats.map(stat => `
+        <div class="impact-card">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">${stat.icon}</div>
+            <div class="impact-number">${stat.value.toLocaleString('id-ID')}</div>
+            <div class="impact-label">${stat.label}</div>
+        </div>
+    `).join('');
+}
+
+// Render success stories
+function renderSuccessStories() {
+  const container = document.getElementById('successStories');
+  container.innerHTML = successStories.map(story => `
+        <div class="success-story">
+            <div class="story-icon">${story.icon}</div>
+            <div class="story-text">"${story.story}"</div>
+            <div class="story-date">${story.date}</div>
+        </div>
+    `).join('');
+}
+
+// Render committed donors showcase
+function renderCommittedDonors() {
+  const grid = document.getElementById('committedDonorsGrid');
+  grid.innerHTML = committedDonors.map(donor => `
+        <div class="donor-card">
+            ${getBadgeHtml(donor.badge)}
+            <div class="donor-avatar">${donor.initials}</div>
+            <div style="text-align: center; margin-bottom: 1rem;">
+                <div style="font-weight: 600; font-size: 1.125rem;">Donor ${donor.initials}</div>
+                <div style="font-size: 0.875rem; color: var(--gray-600);">${donor.location}</div>
+            </div>
+            
+            <div style="text-align: center; margin-bottom: 1rem;">
+                <span class="blood-badge blood-badge-sm ${getBloodTypeClass(donor.bloodType)}">${donor.bloodType}</span>
+            </div>
+
+            <div class="donor-stats">
+                <div class="stat-item">
+                    <span class="stat-value">${donor.totalDonations}</span>
+                    <span class="stat-label">Donasi</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">${donor.patientsHelped}</span>
+                    <span class="stat-label">Pasien</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--gray-100); font-size: 0.75rem; color: var(--gray-500); text-align: center;">
+                Komitmen: ${donor.frequency}
+            </div>
+        </div>
+    `).join('');
+}
+
+// Get badge HTML
+function getBadgeHtml(badge) {
+  if (!badge) return '';
+  let className = 'badge-committed';
+  if (badge === 'Life Saver') className = 'badge-lifesaver';
+  return `<div class="donor-badge ${className}">${badge}</div>`;
+}
+
+// Setup registration form
+function setupRegistrationForm() {
+  const form = document.getElementById('donorRegistrationForm');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Simulate processing
+    const btn = form.querySelector('button[type="submit"]');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Memproses...';
+
+    setTimeout(() => {
+      // Get form values
+      const name = document.getElementById('donorName').value;
+      const bloodType = document.getElementById('donorBloodType').value;
+      const location = document.getElementById('donorLocation').value;
+      const frequency = document.getElementById('donorFrequency').value;
+      const consent = document.getElementById('donorConsent').checked;
+
+      // Show success modal (reusing donation modal for convenience or standard alert)
+      // Here we'll use a custom success message
+      showRegistrationSuccess(name, bloodType, frequency);
+
+      btn.disabled = false;
+      btn.textContent = originalText;
+      form.reset();
+
+      // Simulate adding to list if consent is given
+      if (consent) {
+        addNewDonorToList(name, bloodType, location, frequency);
+      }
+    }, 1500);
   });
 }
 
-// Setup filters
-function setupFilters() {
-  document.getElementById('patientStatusFilter').addEventListener('change', renderPatients);
-  document.getElementById('donorAvailabilityFilter').addEventListener('change', renderDonors);
-}
-
-// Render patients
-function renderPatients() {
-  const filter = document.getElementById('patientStatusFilter').value;
-  const filteredPatients = filter ?
-    patientData.filter(p => p.matchStatus === filter) :
-    patientData;
-
-  document.getElementById('patientCount').textContent = filteredPatients.length;
-
-  const grid = document.getElementById('patientGrid');
-  grid.innerHTML = '';
-
-  filteredPatients.forEach(patient => {
-    const card = createPatientCard(patient);
-    grid.appendChild(card);
-  });
-}
-
-// Create patient card
-function createPatientCard(patient) {
-  const card = document.createElement('div');
-  card.className = 'profile-card';
-
-  const initials = patient.name.split(' ').map(n => n[0]).join('');
-  const matchBadge = patient.matchStatus === 'matched' ?
-    '<span class="badge badge-success">✓ Terhubung</span>' :
-    '<span class="badge badge-warning">Mencari Donor</span>';
-
-  card.innerHTML = `
-    <div class="profile-header">
-      <div class="profile-avatar">${initials}</div>
-      <div class="profile-info">
-        <div class="profile-name">${patient.name}</div>
-        <div class="profile-meta">${patient.age} tahun • ${patient.location}</div>
-      </div>
-    </div>
-    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; align-items: center;">
-      <span class="blood-badge blood-badge-sm ${getBloodTypeClass(patient.bloodType)}">${patient.bloodType}</span>
-      ${matchBadge}
-    </div>
-    <div style="background: var(--gray-50); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem;">
-      <div style="font-weight: 600; margin-bottom: 0.5rem;">📋 Informasi Medis</div>
-      <div style="font-size: 0.875rem; color: var(--gray-700);">
-        <div>Diagnosis: <strong>${patient.diagnosis}</strong></div>
-        <div>Frekuensi: <strong>${patient.frequency}</strong></div>
-        <div>Transfusi berikutnya: <strong>${formatDate(new Date(patient.nextTransfusion))}</strong></div>
-      </div>
-    </div>
-    <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 1rem;">
-      🏥 ${patient.hospital}
-    </div>
-    ${patient.matchStatus === 'searching' ?
-      `<button class="btn btn-primary" style="width: 100%;" onclick='findMatchesForPatient(${JSON.stringify(patient)})'>
-        Cari Donor Cocok
-      </button>` :
-      `<button class="btn btn-secondary" style="width: 100%;" onclick='viewMatchDetail(${patient.id})'>
-        Lihat Donor
-      </button>`
-    }
-  `;
-
-  return card;
-}
-
-// Render donors
-function renderDonors() {
-  const filter = document.getElementById('donorAvailabilityFilter').value;
-  const filteredDonors = filter ?
-    donorData.filter(d => d.availability === filter) :
-    donorData;
-
-  document.getElementById('donorCount').textContent = filteredDonors.length;
-
-  const grid = document.getElementById('donorGrid');
-  grid.innerHTML = '';
-
-  filteredDonors.forEach(donor => {
-    const card = createDonorCard(donor);
-    grid.appendChild(card);
-  });
-}
-
-// Create donor card
-function createDonorCard(donor) {
-  const card = document.createElement('div');
-  card.className = 'profile-card';
-
-  const initials = donor.name.split(' ').map(n => n[0]).join('');
-  const availabilityBadge = donor.availability === 'Tersedia' ?
-    '<span class="badge badge-success">✓ Tersedia</span>' :
-    '<span class="badge badge-secondary">Terjadwal</span>';
-
-  card.innerHTML = `
-    <div class="profile-header">
-      <div class="profile-avatar" style="background: linear-gradient(135deg, var(--success), var(--secondary));">${initials}</div>
-      <div class="profile-info">
-        <div class="profile-name">${donor.name}</div>
-        <div class="profile-meta">${donor.age} tahun • ${donor.location}</div>
-      </div>
-    </div>
-    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; align-items: center;">
-      <span class="blood-badge blood-badge-sm ${getBloodTypeClass(donor.bloodType)}">${donor.bloodType}</span>
-      ${availabilityBadge}
-    </div>
-    <div class="profile-stats">
-      <div class="stat-box">
-        <span class="stat-value">${donor.totalDonations}</span>
-        <span class="stat-label">Total Donasi</span>
-      </div>
-      <div class="stat-box">
-        <span class="stat-value">${donor.frequency}</span>
-        <span class="stat-label">Frekuensi</span>
-      </div>
-    </div>
-    <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 1rem;">
-      📅 Donor terakhir: ${formatDate(new Date(donor.lastDonation))}
-    </div>
-    ${donor.availability === 'Tersedia' ?
-      `<button class="btn btn-outline" style="width: 100%;" onclick='findPatientsForDonor(${JSON.stringify(donor)})'>
-        Lihat Pasien Cocok
-      </button>` :
-      `<button class="btn btn-outline" style="width: 100%;" onclick='viewMatchDetail(null, ${donor.id})'>
-        Lihat Pasien
-      </button>`
-    }
-  `;
-
-  return card;
-}
-
-// Render active matches
-function renderMatches() {
-  document.getElementById('matchCount').textContent = matchData.length;
-
-  const matchList = document.getElementById('matchList');
-  matchList.innerHTML = '';
-
-  matchData.forEach(match => {
-    const patient = patientData.find(p => p.id === match.patientId);
-    const donor = donorData.find(d => d.id === match.donorId);
-
-    if (!patient || !donor) return;
-
-    const card = createMatchCard(match, patient, donor);
-    matchList.appendChild(card);
-  });
-}
-
-// Create match card
-function createMatchCard(match, patient, donor) {
-  const card = document.createElement('div');
-  card.className = 'match-card';
-
-  const matchDuration = Math.floor((new Date() - new Date(match.matchedDate)) / (1000 * 60 * 60 * 24));
-
-  card.innerHTML = `
-    <div class="match-header">
-      <div>
-        <h3 style="margin: 0 0 0.5rem 0;">Match #${match.id}</h3>
-        <div style="font-size: 0.875rem; color: var(--gray-600);">
-          Terhubung sejak ${formatDate(new Date(match.matchedDate))} (${matchDuration} hari)
-        </div>
-      </div>
-      <div>
-        <div class="match-score">Cocok ${match.compatibilityScore}%</div>
-      </div>
-    </div>
-
-    <div class="match-profiles">
-      <div style="background: var(--gray-50); padding: 1.5rem; border-radius: var(--radius-lg);">
-        <div style="text-align: center; margin-bottom: 1rem;">
-          <div style="width: 60px; height: 60px; margin: 0 auto 0.75rem; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: 700;">
-            ${patient.name.split(' ').map(n => n[0]).join('')}
-          </div>
-          <div style="font-weight: 600; margin-bottom: 0.25rem;">${patient.name}</div>
-          <div style="font-size: 0.875rem; color: var(--gray-600);">Pasien</div>
-        </div>
-        <div style="text-align: center;">
-          <span class="blood-badge blood-badge-sm ${getBloodTypeClass(patient.bloodType)}">${patient.bloodType}</span>
-        </div>
-      </div>
-
-      <div class="match-connection">
-        <div style="font-size: 3rem;">🤝</div>
-        <div style="font-size: 0.875rem; color: var(--gray-600); margin-top: 0.5rem;">
-          ${match.totalDonations} donasi
-        </div>
-      </div>
-
-    <div style="background: var(--gray-50); padding: 1.5rem; border-radius: var(--radius-lg);">
-        <div style="text-align: center; margin-bottom: 1rem;">
-          <div style="width: 60px; height: 60px; margin: 0 auto 0.75rem; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--success), var(--secondary)); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: 700;">
-            ${donor.name.split(' ').map(n => n[0]).join('')}
-          </div>
-          <div style="font-weight: 600; margin-bottom: 0.25rem;">${donor.name}</div>
-          <div style="font-size: 0.875rem; color: var(--gray-600);">Donor</div>
-        </div>
-        <div style="text-align: center;">
-          <span class="blood-badge blood-badge-sm ${getBloodTypeClass(donor.bloodType)}">${donor.bloodType}</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="grid grid-3" style="margin-top: 1.5rem;">
-      <div style="background: var(--gray-50); padding: 1rem; border-radius: var(--radius-md); text-align: center;">
-        <div style="font-weight: 700; margin-bottom: 0.25rem;">📅 Donasi Berikutnya</div>
-        <div style="font-size: 0.875rem; color: var(--gray-700);">${formatDate(new Date(match.nextScheduledDonation))}</div>
-      </div>
-      <div style="background: var(--gray-50); padding: 1rem; border-radius: var(--radius-md); text-align: center;">
-        <div style="font-weight: 700; margin-bottom: 0.25rem;">💬 Komunikasi Terakhir</div>
-        <div style="font-size: 0.875rem; color: var(--gray-700);">${formatDate(new Date(match.lastCommunication))}</div>
-      </div>
-      <div style="background: var(--gray-50); padding: 1rem; border-radius: var(--radius-md); text-align: center;">
-        <div style="font-weight: 700; margin-bottom: 0.25rem;">⭐ Status</div>
-        <div><span class="badge badge-success">Aktif</span></div>
-      </div>
-    </div>
-
-    <div class="timeline">
-      <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <div class="timeline-date">17 Jan 2026</div>
-        <div class="timeline-content">Reminder donasi dikirim</div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <div class="timeline-date">${formatDate(new Date(match.lastCommunication))}</div>
-        <div class="timeline-content">Komunikasi koordinasi jadwal</div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-dot"></div>
-        <div class="timeline-date">${formatDate(new Date(match.matchedDate))}</div>
-        <div class="timeline-content">Match berhasil dibuat</div>
-      </div>
-    </div>
-  `;
-
-  return card;
-}
-
-// Find matches for patient
-function findMatchesForPatient(patient) {
-  selectedPatient = patient;
-
-  // Find compatible donors
-  const compatibleDonors = donorData.filter(donor =>
-    donor.bloodType === patient.bloodType &&
-    donor.availability === 'Tersedia'
-  );
-
-  if (compatibleDonors.length === 0) {
-    alert('Maaf, saat ini tidak ada donor tersedia dengan golongan darah yang cocok.');
-    return;
-  }
-
-  // Calculate compatibility scores
-  const donorsWithScores = compatibleDonors.map(donor => ({
-    ...donor,
-    score: calculateCompatibilityScore(patient, donor)
-  })).sort((a, b) => b.score - a.score);
-
-  showMatchSuggestions(patient, donorsWithScores);
-}
-
-// Find patients for donor
-function findPatientsForDonor(donor) {
-  selectedDonor = donor;
-
-  const compatiblePatients = patientData.filter(patient =>
-    patient.bloodType === donor.bloodType &&
-    patient.matchStatus === 'searching'
-  );
-
-  if (compatiblePatients.length === 0) {
-    alert('Saat ini tidak ada pasien yang membutuhkan donor dengan golongan darah Anda.');
-    return;
-  }
-
-  const patientsWithScores = compatiblePatients.map(patient => ({
-    ...patient,
-    score: calculateCompatibilityScore(patient, donor)
-  })).sort((a, b) => b.score - a.score);
-
-  showMatchSuggestions(patientsWithScores[0], [donor]);
-}
-
-// Calculate compatibility score
-function calculateCompatibilityScore(patient, donor) {
-  let score = 60; // Base score for blood type match
-
-  // Location proximity (simple check)
-  if (patient.location === donor.location) score += 20;
-  else if (patient.location.includes(donor.location.split(' ')[0])) score += 10;
-
-  // Donor experience
-  if (donor.totalDonations > 20) score += 15;
-  else if (donor.totalDonations > 10) score += 10;
-  else score += 5;
-
-  // Donor frequency compatibility
-  if (donor.frequency.includes('2 bulan') || donor.frequency.includes('3 bulan')) score += 5;
-
-  return Math.min(100, score);
-}
-
-// Show match suggestions
-function showMatchSuggestions(patient, donors) {
-  const modal = document.getElementById('matchModal');
-  const modalBody = document.getElementById('matchModalBody');
-
-  const topDonor = donors[0];
-
-  modalBody.innerHTML = `
-    <div style="text-align: center; margin-bottom: 2rem;">
-      <div style="font-size: 3rem; margin-bottom: 1rem;">✨</div>
-      <h3>Kami menemukan donor cocok!</h3>
-      <p style="color: var(--gray-600);">Tingkat kesesuaian: <strong>${topDonor.score}%</strong></p>
-    </div>
-
-    <div class="grid grid-2" style="margin-bottom: 2rem;">
-      <div style="background: var(--gray-50); padding: 1.5rem; border-radius: var(--radius-lg);">
-        <div style="text-align: center; margin-bottom: 1rem; font-weight: 600;">Pasien</div>
-        <div style="text-align: center; margin-bottom: 1rem;">${patient.name}</div>
-        <div style="text-align: center;">
-          <span class="blood-badge ${getBloodTypeClass(patient.bloodType)}">${patient.bloodType}</span>
-        </div>
-        <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--gray-600);">
-          📍 ${patient.location}<br>
-          🏥 ${patient.hospital.split(',')[0]}
-        </div>
-      </div>
-
-      <div style="background: var(--gray-50); padding: 1.5rem; border-radius: var(--radius-lg);">
-        <div style="text-align: center; margin-bottom: 1rem; font-weight: 600;">Donor</div>
-        <div style="text-align: center; margin-bottom: 1rem;">${topDonor.name}</div>
-        <div style="text-align: center;">
-          <span class="blood-badge ${getBloodTypeClass(topDonor.bloodType)}">${topDonor.bloodType}</span>
-        </div>
-        <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--gray-600);">
-          📍 ${topDonor.location}<br>
-          💉 ${topDonor.totalDonations} donasi
-        </div>
-      </div>
-    </div>
-
-    <div style="background: var(--success-light); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem;">
-      <div style="font-weight: 600; margin-bottom: 0.5rem;">✅ Alasan Cocok:</div>
-      <ul style="margin: 0; padding-left: 1.5rem; font-size: 0.875rem;">
-        <li>Golongan darah sama: ${patient.bloodType}</li>
-        ${patient.location === topDonor.location ? '<li>Lokasi sama atau berdekatan</li>' : ''}
-        <li>Donor berpengalaman (${topDonor.totalDonations} kali donasi)</li>
-        <li>Frekuensi donor: ${topDonor.frequency}</li>
-      </ul>
-    </div>
-
-    <p style="font-size: 0.875rem; color: var(--gray-600);">
-      Dengan menghubungkan, PMI akan memfasilitasi perkenalan antara donor dan pasien untuk membangun hubungan donor tetap.
-    </p>
-  `;
-
-  modal.classList.remove('hidden');
-}
-
-// Confirm match
-function confirmMatch() {
-  if (!selectedPatient) {
-    alert('Error: Pasien tidak ditemukan');
-    return;
-  }
-
-  // Close match modal first
-  closeMatchModal();
-
-  // Show success message briefly
+// Show registration success
+function showRegistrationSuccess(name, bloodType, frequency) {
   const successMsg = document.createElement('div');
   successMsg.style.cssText = `
         position: fixed;
@@ -416,87 +126,80 @@ function confirmMatch() {
         left: 50%;
         transform: translate(-50%, -50%);
         background: white;
-        padding: 2rem;
-        border-radius: 1rem;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        z-index: 9998;
+        padding: 2.5rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        z-index: 9999;
         text-align: center;
+        max-width: 400px;
+        width: 90%;
+        animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     `;
+
   successMsg.innerHTML = `
-        <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
-        <h3 style="margin-bottom: 0.5rem;">Match Berhasil Dibuat!</h3>
-        <p style="color: var(--gray-600); margin: 0;">PMI akan segera menghubungi kedua pihak.</p>
+        <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
+        <h2 style="margin-bottom: 0.5rem; color: var(--primary);">Terima Kasih!</h2>
+        <p style="color: var(--gray-600); margin-bottom: 1.5rem; line-height: 1.6;">
+            <strong>${name}</strong>, komitmen Anda untuk donor <strong>${bloodType}</strong> setiap <strong>${frequency}</strong> sangat berarti.
+        </p>
+        <div style="background: var(--success-light); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; font-size: 0.875rem;">
+            Tim PMI akan menghubungi Anda untuk jadwal donasi pertama.
+        </div>
+        <button class="btn btn-primary" style="width: 100%;" onclick="this.parentElement.remove()">Tutup</button>
     `;
-  document.body.appendChild(successMsg);
 
-  // Show donation modal after brief delay
-  setTimeout(() => {
-    document.body.removeChild(successMsg);
-
-    donationModal.show({
-      context: 'Terima kasih telah menghubungkan donor dengan pasien!',
-      onDonate: (amount) => {
-        console.log(`Donasi sebesar Rp ${amount.toLocaleString('id-ID')} diterima`);
-        // Reload after donation
-        setTimeout(() => {
-          location.reload();
-        }, 500);
-      },
-      onSkip: () => {
-        // Reload after skip
-        setTimeout(() => {
-          location.reload();
-        }, 300);
-      }
-    });
-  }, 1500);
-}
-
-// Close match modal
-function closeMatchModal() {
-  document.getElementById('matchModal').classList.add('hidden');
-  selectedPatient = null;
-  selectedDonor = null;
-}
-
-// View match detail
-function viewMatchDetail(patientId, donorId) {
-  let match;
-  if (patientId) {
-    match = matchData.find(m => m.patientId === patientId);
-  } else if (donorId) {
-    match = matchData.find(m => m.donorId === donorId);
-  }
-
-  if (match) {
-    // Switch to matches tab
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    document.querySelector('[data-tab="matches"]').classList.add('active');
-    document.getElementById('matches').classList.add('active');
-  }
-}
-
-// Helper: Get blood type CSS class
-function getBloodTypeClass(bloodType) {
-  const classes = {
-    'A+': 'blood-a-plus',
-    'A-': 'blood-a-minus',
-    'B+': 'blood-b-plus',
-    'B-': 'blood-b-minus',
-    'AB+': 'blood-ab-plus',
-    'AB-': 'blood-ab-minus',
-    'O+': 'blood-o-plus',
-    'O-': 'blood-o-minus'
+  // Add backdrop
+  const backdrop = document.createElement('div');
+  backdrop.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9998;
+        backdrop-filter: blur(4px);
+    `;
+  backdrop.onclick = () => {
+    successMsg.remove();
+    backdrop.remove();
   };
-  return classes[bloodType] || '';
+
+  document.body.appendChild(backdrop);
+  document.body.appendChild(successMsg);
 }
 
-// Helper: Format date
-function formatDate(date) {
-  return date.toLocaleDateString('id-ID', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric'
-  });
+// Simulate adding new donor to the list
+function addNewDonorToList(name, bloodType, location, frequency) {
+  const initials = name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  const newDonor = {
+    initials: initials,
+    bloodType: bloodType,
+    location: location.split(',')[0], // Take just the city
+    frequency: frequency,
+    patientsHelped: 0,
+    totalDonations: 0,
+    badge: 'New'
+  };
+
+  // Add to beginning of array
+  committedDonors.unshift(newDonor);
+  renderCommittedDonors();
+
+  // Update stats
+  impactStats.totalCommittedDonors++;
+  renderImpactStats();
+}
+
+// Scroll to registration
+function scrollToRegistration() {
+  document.getElementById('registrationSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Helper: Get blood type CSS class (reused logic or defined here)
+function getBloodTypeClass(bloodType) {
+  // We can assume status is sufficient for generic display or map specifically
+  // Since we changed CSS to status-based, valid classes are blood-status-sufficient/low/critical
+  // But for donor badges, we might want just a generic style or use the sufficient green
+  return 'blood-status-sufficient';
 }

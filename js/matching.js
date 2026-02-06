@@ -5,65 +5,65 @@ let selectedDonor = null;
 
 // Initialize matching page
 document.addEventListener('DOMContentLoaded', function () {
-    setupTabs();
-    renderPatients();
-    renderDonors();
-    renderMatches();
-    setupFilters();
+  setupTabs();
+  renderPatients();
+  renderDonors();
+  renderMatches();
+  setupFilters();
 });
 
 // Setup tab navigation
 function setupTabs() {
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Remove active from all tabs
-            tabBtns.forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Remove active from all tabs
+      tabBtns.forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
-            // Add active to clicked tab
-            btn.classList.add('active');
-            const tabId = btn.getAttribute('data-tab');
-            document.getElementById(tabId).classList.add('active');
-        });
+      // Add active to clicked tab
+      btn.classList.add('active');
+      const tabId = btn.getAttribute('data-tab');
+      document.getElementById(tabId).classList.add('active');
     });
+  });
 }
 
 // Setup filters
 function setupFilters() {
-    document.getElementById('patientStatusFilter').addEventListener('change', renderPatients);
-    document.getElementById('donorAvailabilityFilter').addEventListener('change', renderDonors);
+  document.getElementById('patientStatusFilter').addEventListener('change', renderPatients);
+  document.getElementById('donorAvailabilityFilter').addEventListener('change', renderDonors);
 }
 
 // Render patients
 function renderPatients() {
-    const filter = document.getElementById('patientStatusFilter').value;
-    const filteredPatients = filter ?
-        patientData.filter(p => p.matchStatus === filter) :
-        patientData;
+  const filter = document.getElementById('patientStatusFilter').value;
+  const filteredPatients = filter ?
+    patientData.filter(p => p.matchStatus === filter) :
+    patientData;
 
-    document.getElementById('patientCount').textContent = filteredPatients.length;
+  document.getElementById('patientCount').textContent = filteredPatients.length;
 
-    const grid = document.getElementById('patientGrid');
-    grid.innerHTML = '';
+  const grid = document.getElementById('patientGrid');
+  grid.innerHTML = '';
 
-    filteredPatients.forEach(patient => {
-        const card = createPatientCard(patient);
-        grid.appendChild(card);
-    });
+  filteredPatients.forEach(patient => {
+    const card = createPatientCard(patient);
+    grid.appendChild(card);
+  });
 }
 
 // Create patient card
 function createPatientCard(patient) {
-    const card = document.createElement('div');
-    card.className = 'profile-card';
+  const card = document.createElement('div');
+  card.className = 'profile-card';
 
-    const initials = patient.name.split(' ').map(n => n[0]).join('');
-    const matchBadge = patient.matchStatus === 'matched' ?
-        '<span class="badge badge-success">✓ Terhubung</span>' :
-        '<span class="badge badge-warning">Mencari Donor</span>';
+  const initials = patient.name.split(' ').map(n => n[0]).join('');
+  const matchBadge = patient.matchStatus === 'matched' ?
+    '<span class="badge badge-success">✓ Terhubung</span>' :
+    '<span class="badge badge-warning">Mencari Donor</span>';
 
-    card.innerHTML = `
+  card.innerHTML = `
     <div class="profile-header">
       <div class="profile-avatar">${initials}</div>
       <div class="profile-info">
@@ -87,47 +87,47 @@ function createPatientCard(patient) {
       🏥 ${patient.hospital}
     </div>
     ${patient.matchStatus === 'searching' ?
-            `<button class="btn btn-primary" style="width: 100%;" onclick='findMatchesForPatient(${JSON.stringify(patient)})'>
+      `<button class="btn btn-primary" style="width: 100%;" onclick='findMatchesForPatient(${JSON.stringify(patient)})'>
         Cari Donor Cocok
       </button>` :
-            `<button class="btn btn-secondary" style="width: 100%;" onclick='viewMatchDetail(${patient.id})'>
+      `<button class="btn btn-secondary" style="width: 100%;" onclick='viewMatchDetail(${patient.id})'>
         Lihat Donor
       </button>`
-        }
+    }
   `;
 
-    return card;
+  return card;
 }
 
 // Render donors
 function renderDonors() {
-    const filter = document.getElementById('donorAvailabilityFilter').value;
-    const filteredDonors = filter ?
-        donorData.filter(d => d.availability === filter) :
-        donorData;
+  const filter = document.getElementById('donorAvailabilityFilter').value;
+  const filteredDonors = filter ?
+    donorData.filter(d => d.availability === filter) :
+    donorData;
 
-    document.getElementById('donorCount').textContent = filteredDonors.length;
+  document.getElementById('donorCount').textContent = filteredDonors.length;
 
-    const grid = document.getElementById('donorGrid');
-    grid.innerHTML = '';
+  const grid = document.getElementById('donorGrid');
+  grid.innerHTML = '';
 
-    filteredDonors.forEach(donor => {
-        const card = createDonorCard(donor);
-        grid.appendChild(card);
-    });
+  filteredDonors.forEach(donor => {
+    const card = createDonorCard(donor);
+    grid.appendChild(card);
+  });
 }
 
 // Create donor card
 function createDonorCard(donor) {
-    const card = document.createElement('div');
-    card.className = 'profile-card';
+  const card = document.createElement('div');
+  card.className = 'profile-card';
 
-    const initials = donor.name.split(' ').map(n => n[0]).join('');
-    const availabilityBadge = donor.availability === 'Tersedia' ?
-        '<span class="badge badge-success">✓ Tersedia</span>' :
-        '<span class="badge badge-secondary">Terjadwal</span>';
+  const initials = donor.name.split(' ').map(n => n[0]).join('');
+  const availabilityBadge = donor.availability === 'Tersedia' ?
+    '<span class="badge badge-success">✓ Tersedia</span>' :
+    '<span class="badge badge-secondary">Terjadwal</span>';
 
-    card.innerHTML = `
+  card.innerHTML = `
     <div class="profile-header">
       <div class="profile-avatar" style="background: linear-gradient(135deg, var(--success), var(--secondary));">${initials}</div>
       <div class="profile-info">
@@ -153,44 +153,44 @@ function createDonorCard(donor) {
       📅 Donor terakhir: ${formatDate(new Date(donor.lastDonation))}
     </div>
     ${donor.availability === 'Tersedia' ?
-            `<button class="btn btn-outline" style="width: 100%;" onclick='findPatientsForDonor(${JSON.stringify(donor)})'>
+      `<button class="btn btn-outline" style="width: 100%;" onclick='findPatientsForDonor(${JSON.stringify(donor)})'>
         Lihat Pasien Cocok
       </button>` :
-            `<button class="btn btn-outline" style="width: 100%;" onclick='viewMatchDetail(null, ${donor.id})'>
+      `<button class="btn btn-outline" style="width: 100%;" onclick='viewMatchDetail(null, ${donor.id})'>
         Lihat Pasien
       </button>`
-        }
+    }
   `;
 
-    return card;
+  return card;
 }
 
 // Render active matches
 function renderMatches() {
-    document.getElementById('matchCount').textContent = matchData.length;
+  document.getElementById('matchCount').textContent = matchData.length;
 
-    const matchList = document.getElementById('matchList');
-    matchList.innerHTML = '';
+  const matchList = document.getElementById('matchList');
+  matchList.innerHTML = '';
 
-    matchData.forEach(match => {
-        const patient = patientData.find(p => p.id === match.patientId);
-        const donor = donorData.find(d => d.id === match.donorId);
+  matchData.forEach(match => {
+    const patient = patientData.find(p => p.id === match.patientId);
+    const donor = donorData.find(d => d.id === match.donorId);
 
-        if (!patient || !donor) return;
+    if (!patient || !donor) return;
 
-        const card = createMatchCard(match, patient, donor);
-        matchList.appendChild(card);
-    });
+    const card = createMatchCard(match, patient, donor);
+    matchList.appendChild(card);
+  });
 }
 
 // Create match card
 function createMatchCard(match, patient, donor) {
-    const card = document.createElement('div');
-    card.className = 'match-card';
+  const card = document.createElement('div');
+  card.className = 'match-card';
 
-    const matchDuration = Math.floor((new Date() - new Date(match.matchedDate)) / (1000 * 60 * 60 * 24));
+  const matchDuration = Math.floor((new Date() - new Date(match.matchedDate)) / (1000 * 60 * 60 * 24));
 
-    card.innerHTML = `
+  card.innerHTML = `
     <div class="match-header">
       <div>
         <h3 style="margin: 0 0 0.5rem 0;">Match #${match.id}</h3>
@@ -272,82 +272,82 @@ function createMatchCard(match, patient, donor) {
     </div>
   `;
 
-    return card;
+  return card;
 }
 
 // Find matches for patient
 function findMatchesForPatient(patient) {
-    selectedPatient = patient;
+  selectedPatient = patient;
 
-    // Find compatible donors
-    const compatibleDonors = donorData.filter(donor =>
-        donor.bloodType === patient.bloodType &&
-        donor.availability === 'Tersedia'
-    );
+  // Find compatible donors
+  const compatibleDonors = donorData.filter(donor =>
+    donor.bloodType === patient.bloodType &&
+    donor.availability === 'Tersedia'
+  );
 
-    if (compatibleDonors.length === 0) {
-        alert('Maaf, saat ini tidak ada donor tersedia dengan golongan darah yang cocok.');
-        return;
-    }
+  if (compatibleDonors.length === 0) {
+    alert('Maaf, saat ini tidak ada donor tersedia dengan golongan darah yang cocok.');
+    return;
+  }
 
-    // Calculate compatibility scores
-    const donorsWithScores = compatibleDonors.map(donor => ({
-        ...donor,
-        score: calculateCompatibilityScore(patient, donor)
-    })).sort((a, b) => b.score - a.score);
+  // Calculate compatibility scores
+  const donorsWithScores = compatibleDonors.map(donor => ({
+    ...donor,
+    score: calculateCompatibilityScore(patient, donor)
+  })).sort((a, b) => b.score - a.score);
 
-    showMatchSuggestions(patient, donorsWithScores);
+  showMatchSuggestions(patient, donorsWithScores);
 }
 
 // Find patients for donor
 function findPatientsForDonor(donor) {
-    selectedDonor = donor;
+  selectedDonor = donor;
 
-    const compatiblePatients = patientData.filter(patient =>
-        patient.bloodType === donor.bloodType &&
-        patient.matchStatus === 'searching'
-    );
+  const compatiblePatients = patientData.filter(patient =>
+    patient.bloodType === donor.bloodType &&
+    patient.matchStatus === 'searching'
+  );
 
-    if (compatiblePatients.length === 0) {
-        alert('Saat ini tidak ada pasien yang membutuhkan donor dengan golongan darah Anda.');
-        return;
-    }
+  if (compatiblePatients.length === 0) {
+    alert('Saat ini tidak ada pasien yang membutuhkan donor dengan golongan darah Anda.');
+    return;
+  }
 
-    const patientsWithScores = compatiblePatients.map(patient => ({
-        ...patient,
-        score: calculateCompatibilityScore(patient, donor)
-    })).sort((a, b) => b.score - a.score);
+  const patientsWithScores = compatiblePatients.map(patient => ({
+    ...patient,
+    score: calculateCompatibilityScore(patient, donor)
+  })).sort((a, b) => b.score - a.score);
 
-    showMatchSuggestions(patientsWithScores[0], [donor]);
+  showMatchSuggestions(patientsWithScores[0], [donor]);
 }
 
 // Calculate compatibility score
 function calculateCompatibilityScore(patient, donor) {
-    let score = 60; // Base score for blood type match
+  let score = 60; // Base score for blood type match
 
-    // Location proximity (simple check)
-    if (patient.location === donor.location) score += 20;
-    else if (patient.location.includes(donor.location.split(' ')[0])) score += 10;
+  // Location proximity (simple check)
+  if (patient.location === donor.location) score += 20;
+  else if (patient.location.includes(donor.location.split(' ')[0])) score += 10;
 
-    // Donor experience
-    if (donor.totalDonations > 20) score += 15;
-    else if (donor.totalDonations > 10) score += 10;
-    else score += 5;
+  // Donor experience
+  if (donor.totalDonations > 20) score += 15;
+  else if (donor.totalDonations > 10) score += 10;
+  else score += 5;
 
-    // Donor frequency compatibility
-    if (donor.frequency.includes('2 bulan') || donor.frequency.includes('3 bulan')) score += 5;
+  // Donor frequency compatibility
+  if (donor.frequency.includes('2 bulan') || donor.frequency.includes('3 bulan')) score += 5;
 
-    return Math.min(100, score);
+  return Math.min(100, score);
 }
 
 // Show match suggestions
 function showMatchSuggestions(patient, donors) {
-    const modal = document.getElementById('matchModal');
-    const modalBody = document.getElementById('matchModalBody');
+  const modal = document.getElementById('matchModal');
+  const modalBody = document.getElementById('matchModalBody');
 
-    const topDonor = donors[0];
+  const topDonor = donors[0];
 
-    modalBody.innerHTML = `
+  modalBody.innerHTML = `
     <div style="text-align: center; margin-bottom: 2rem;">
       <div style="font-size: 3rem; margin-bottom: 1rem;">✨</div>
       <h3>Kami menemukan donor cocok!</h3>
@@ -395,70 +395,108 @@ function showMatchSuggestions(patient, donors) {
     </p>
   `;
 
-    modal.classList.remove('hidden');
+  modal.classList.remove('hidden');
 }
 
 // Confirm match
 function confirmMatch() {
-    if (!selectedPatient) {
-        alert('Error: Pasien tidak ditemukan');
-        return;
-    }
+  if (!selectedPatient) {
+    alert('Error: Pasien tidak ditemukan');
+    return;
+  }
 
-    alert('✅ Match berhasil dibuat!\n\nPMI akan segera menghubungi kedua pihak untuk memfasilitasi perkenalan.');
-    closeMatchModal();
+  // Close match modal first
+  closeMatchModal();
 
-    // Refresh data
-    setTimeout(() => {
-        location.reload();
-    }, 500);
+  // Show success message briefly
+  const successMsg = document.createElement('div');
+  successMsg.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        z-index: 9998;
+        text-align: center;
+    `;
+  successMsg.innerHTML = `
+        <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+        <h3 style="margin-bottom: 0.5rem;">Match Berhasil Dibuat!</h3>
+        <p style="color: var(--gray-600); margin: 0;">PMI akan segera menghubungi kedua pihak.</p>
+    `;
+  document.body.appendChild(successMsg);
+
+  // Show donation modal after brief delay
+  setTimeout(() => {
+    document.body.removeChild(successMsg);
+
+    donationModal.show({
+      context: 'Terima kasih telah menghubungkan donor dengan pasien!',
+      onDonate: (amount) => {
+        console.log(`Donasi sebesar Rp ${amount.toLocaleString('id-ID')} diterima`);
+        // Reload after donation
+        setTimeout(() => {
+          location.reload();
+        }, 500);
+      },
+      onSkip: () => {
+        // Reload after skip
+        setTimeout(() => {
+          location.reload();
+        }, 300);
+      }
+    });
+  }, 1500);
 }
 
 // Close match modal
 function closeMatchModal() {
-    document.getElementById('matchModal').classList.add('hidden');
-    selectedPatient = null;
-    selectedDonor = null;
+  document.getElementById('matchModal').classList.add('hidden');
+  selectedPatient = null;
+  selectedDonor = null;
 }
 
 // View match detail
 function viewMatchDetail(patientId, donorId) {
-    let match;
-    if (patientId) {
-        match = matchData.find(m => m.patientId === patientId);
-    } else if (donorId) {
-        match = matchData.find(m => m.donorId === donorId);
-    }
+  let match;
+  if (patientId) {
+    match = matchData.find(m => m.patientId === patientId);
+  } else if (donorId) {
+    match = matchData.find(m => m.donorId === donorId);
+  }
 
-    if (match) {
-        // Switch to matches tab
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.querySelector('[data-tab="matches"]').classList.add('active');
-        document.getElementById('matches').classList.add('active');
-    }
+  if (match) {
+    // Switch to matches tab
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelector('[data-tab="matches"]').classList.add('active');
+    document.getElementById('matches').classList.add('active');
+  }
 }
 
 // Helper: Get blood type CSS class
 function getBloodTypeClass(bloodType) {
-    const classes = {
-        'A+': 'blood-a-plus',
-        'A-': 'blood-a-minus',
-        'B+': 'blood-b-plus',
-        'B-': 'blood-b-minus',
-        'AB+': 'blood-ab-plus',
-        'AB-': 'blood-ab-minus',
-        'O+': 'blood-o-plus',
-        'O-': 'blood-o-minus'
-    };
-    return classes[bloodType] || '';
+  const classes = {
+    'A+': 'blood-a-plus',
+    'A-': 'blood-a-minus',
+    'B+': 'blood-b-plus',
+    'B-': 'blood-b-minus',
+    'AB+': 'blood-ab-plus',
+    'AB-': 'blood-ab-minus',
+    'O+': 'blood-o-plus',
+    'O-': 'blood-o-minus'
+  };
+  return classes[bloodType] || '';
 }
 
 // Helper: Format date
 function formatDate(date) {
-    return date.toLocaleDateString('id-ID', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric'
-    });
+  return date.toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
 }

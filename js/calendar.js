@@ -290,11 +290,54 @@ function handleRSVP() {
 
   // Simulate RSVP
   selectedEvent.registered++;
-  alert(`✅ Pendaftaran berhasil!\n\nAnda telah terdaftar untuk:\n${selectedEvent.title}\n\nKonfirmasi telah dikirim via email.`);
 
+  // Close event modal first
   closeEventModal();
-  renderCalendar();
-  renderEventList();
+
+  // Show success message briefly
+  const successMsg = document.createElement('div');
+  successMsg.style.cssText = `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    z-index: 9998;
+    text-align: center;
+  `;
+  successMsg.innerHTML = `
+    <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+    <h3 style="margin-bottom: 0.5rem;">Pendaftaran Berhasil!</h3>
+    <p style="color: var(--gray-600); margin: 0;">Konfirmasi telah dikirim via email.</p>
+  `;
+  document.body.appendChild(successMsg);
+
+  // Show donation modal after brief delay
+  setTimeout(() => {
+    document.body.removeChild(successMsg);
+
+    donationModal.show({
+      context: 'Terima kasih telah mendaftar untuk donor darah!',
+      onDonate: (amount) => {
+        console.log(`Donasi sebesar Rp ${amount.toLocaleString('id-ID')} diterima`);
+        // Reload after donation
+        setTimeout(() => {
+          renderCalendar();
+          renderEventList();
+        }, 500);
+      },
+      onSkip: () => {
+        // Reload after skip
+        setTimeout(() => {
+          renderCalendar();
+          renderEventList();
+        }, 300);
+      }
+    });
+  }, 1500);
 }
 
 // Helper: Get event type label

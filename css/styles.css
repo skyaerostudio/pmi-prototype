@@ -250,36 +250,23 @@ body {
   box-shadow: var(--shadow-md);
 }
 
-.blood-a-plus {
-  background: #EF4444;
+.blood-badge-sm {
+  width: 40px;
+  height: 40px;
+  font-size: 0.875rem;
 }
 
-.blood-a-minus {
-  background: #DC2626;
+/* Status-based blood type colors */
+.blood-status-sufficient {
+  background: linear-gradient(135deg, #16A34A, #059669);
 }
 
-.blood-b-plus {
-  background: #F97316;
+.blood-status-low {
+  background: linear-gradient(135deg, #F59E0B, #D97706);
 }
 
-.blood-b-minus {
-  background: #EA580C;
-}
-
-.blood-ab-plus {
-  background: #8B5CF6;
-}
-
-.blood-ab-minus {
-  background: #7C3AED;
-}
-
-.blood-o-plus {
-  background: #10B981;
-}
-
-.blood-o-minus {
-  background: #059669;
+.blood-status-critical {
+  background: linear-gradient(135deg, #DC2626, #B91C1C);
 }
 
 /* Status Indicator */

@@ -1,16 +1,4 @@
-// Dashboard Logic for PMI Blood Stock
-
-// Blood type to CSS class mapping
-const bloodTypeClasses = {
-    'A+': 'blood-a-plus',
-    'A-': 'blood-a-minus',
-    'B+': 'blood-b-plus',
-    'B-': 'blood-b-minus',
-    'AB+': 'blood-ab-plus',
-    'AB-': 'blood-ab-minus',
-    'O+': 'blood-o-plus',
-    'O-': 'blood-o-minus'
-};
+// Blood type to CSS class mapping - REMOVED, now using status-based colors
 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', function () {
@@ -132,7 +120,7 @@ function renderBloodTypeCards(data) {
         card.className = 'blood-type-card';
         card.innerHTML = `
       <div class="blood-type-header">
-        <div class="blood-badge blood-badge-sm ${bloodTypeClasses[type]}">${type}</div>
+        <div class="blood-badge blood-badge-sm blood-status-${data.status}">${type}</div>
         <span class="badge badge-${data.status}">${getStatusLabel(data.status)}</span>
       </div>
       <div class="blood-type-units">${data.totalUnits}</div>
@@ -158,7 +146,7 @@ function renderStockTable(data) {
       <td><strong>${stock.city}</strong></td>
       <td>${stock.province}</td>
       <td>
-        <span class="blood-badge blood-badge-sm ${bloodTypeClasses[stock.bloodType]}">${stock.bloodType}</span>
+        <span class="blood-badge blood-badge-sm blood-status-${stock.status}">${stock.bloodType}</span>
       </td>
       <td><strong>${stock.units}</strong> unit</td>
       <td>
